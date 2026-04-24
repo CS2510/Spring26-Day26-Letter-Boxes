@@ -63,11 +63,13 @@ class Scene {
 
       if (typeof Camera != "undefined") {
         matrix.translateSelf(Engine.canvas.width / 2, Engine.canvas.height / 2)
+        const scalar = (Engine.canvas.width - Engine.letterBoxWidth) / Engine.cameraWidth
+        matrix.scaleSelf(scalar, scalar)
         matrix.multiplySelf(Camera.main.transform.getWorldMatrix().inverse())
         mouse = Vector2.fromDOMPoint(matrix.inverse().transformPoint(Input.mousePosition.toDOMPoint()))
       }
       for (const collidable of collidables) {
-        if (Collisions.isCollisionPointGameObject(collidable.layer == "UI" ? Input.mousePosition.minus(new Vector2(Engine.letterBoxWidth/2, Engine.letterBoxHeight/2)) : mouse, collidable))
+        if (Collisions.isCollisionPointGameObject(collidable.layer == "UI" ? Input.mousePosition.minus(new Vector2(Engine.letterBoxWidth / 2, Engine.letterBoxHeight / 2)) : mouse, collidable))
           thisFrameMouseCollisions.push(collidable)
       }
     }
@@ -130,7 +132,7 @@ class Scene {
 
     for (let i = 0; i < collidables.length; i++) {
       for (let j = i + 1; j < collidables.length; j++) {
-        if (Engine.collisionLayers.length == 0 || Engine.collisionLayers.find(c => c[0] == collidables[i].layer && c[1] == collidables[j].layer)) {
+        if (Engine.collisionLayers.length == 0 || Engine.collisionLayers.find(c => (c[0] == collidables[i].layer && c[1] == collidables[j].layer) || (c[0] == collidables[j].layer && c[1] == collidables[i].layer))) {
           const one = collidables[i]
           const two = collidables[j]
 
@@ -259,7 +261,7 @@ class Scene {
     ctx.save()
     if (typeof Camera != "undefined") {
       ctx.translate(Engine.canvas.width / 2, Engine.canvas.height / 2)
-      const scalar = (width - Engine.letterBoxWidth)/Engine.cameraWidth
+      const scalar = (width - Engine.letterBoxWidth) / Engine.cameraWidth
       ctx.scale(scalar, scalar)
       ctx.setTransform(ctx.getTransform().multiply(Camera.main.transform.getWorldMatrix().inverse()))
     }
@@ -272,12 +274,12 @@ class Scene {
     ctx.restore()
 
     ctx.save()
-    ctx.translate(Engine.letterBoxWidth/2, Engine.letterBoxHeight/2)
+    ctx.translate(Engine.letterBoxWidth / 2, Engine.letterBoxHeight / 2)
 
     for (const gameObject of this.gameObjects.filter(go => go.layer == "UI")) {
       gameObject.draw(ctx)
     }
-    
+
     ctx.restore()
 
     //Draw letter boxing
