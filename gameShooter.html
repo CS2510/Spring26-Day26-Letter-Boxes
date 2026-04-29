@@ -175,11 +175,31 @@
     class EnemyController extends Component {
       nextFire = Time.time
       fireInterval = 3
+
+      directionRight = true
+      nextDirectionSwitch = Time.time
+      directionSwitchInterval = 1
+      speed = 15
       update() {
+
         if (Time.time > this.nextFire) {
           this.nextFire = Time.time + this.fireInterval
           instantiate(new EnemyLaserGameObject, this.transform.position.clone())
         }
+
+        if(this.directionRight){
+          this.transform.position.plusEquals(new Vector2(Time.deltaTime * this.speed, 0))
+        }
+        else{
+          this.transform.position.plusEquals(new Vector2(Time.deltaTime * -this.speed, 0))
+        }
+
+        if(this.nextDirectionSwitch < Time.time){
+          this.directionRight = !this.directionRight
+          this.nextDirectionSwitch = Time.time + this.directionSwitchInterval
+        }
+
+
       }
     }
 
